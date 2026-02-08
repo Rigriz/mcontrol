@@ -184,7 +184,7 @@ while($true){
 
     $cpu = Get-CPU
     $cmd = Get-Command
-
+    Write-Host "cnd $cmd cpu $cpu"
     if($cpu -gt $CPU_LIMIT){
         Stop-Worker
     }
