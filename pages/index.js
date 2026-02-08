@@ -5,9 +5,19 @@ export default function Home() {
   const [systems, setSystems] = useState([])
 
   async function load() {
-    const res = await fetch('/api/list')
-    const data = await res.json()
-    setSystems(data)
+    try {
+      const res = await fetch('/api/list')
+      const data = await res.json()
+
+      if (Array.isArray(data)) {
+        setSystems(data)
+      } else {
+        setSystems([])
+      }
+    } catch (err) {
+      console.log("Load error:", err)
+      setSystems([])
+    }
   }
 
   useEffect(() => {
@@ -16,48 +26,25 @@ export default function Home() {
     return () => clearInterval(i)
   }, [])
 
-  async function sendCommand(system, cmd) {
-    await fetch('/api/set-command', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system, command: cmd })
-    })
-  }
-
   return (
     <div style={{ padding: 30 }}>
-      <h1>Worker Dashboard</h1>
+      <h1>Dashboard</h1>
+
+      {systems.length === 0 && (
+        <p>No systems connected yet.</p>
+      )}
 
       {systems.map(s => (
-        <div key={s.system}
-             style={{ border:'1px solid #ccc', margin:10, padding:10 }}>
+        <div key={s.id}
+             style={{ border:'1px solid #ccc', padding:10, margin:10 }}>
 
-          <h3>{s.system}</h3>
-
-          <p>Status: {s.running ? "Running" : "Stopped"}</p>
-          <p>CPU: {s.cpu}%</p>
-          <p>VPN: {s.vpn ? "OK" : "OFF"}</p>
-
-          <button onClick={()=>sendCommand(s.system,'start')}>
-            START
-          </button>
-
-          <button onClick={()=>sendCommand(s.system,'stop')}>
-            STOP
-          </button>
+          <h3>{s.id}</h3>
+          <p>Running: {String(s.running)}</p>
+          <p>CPU: {s.cpu}</p>
+          <p>VPN: {String(s.vpn)}</p>
 
         </div>
       ))}
     </div>
   )
-}
-async function load() {
-  try {
-    const res = await fetch('/api/list')
-    const data = await res.json()
-    setSystems(data || [])
-  } catch (e) {
-    console.log("API error", e)
-    setSystems([])
-  }
 }
