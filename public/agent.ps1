@@ -64,10 +64,12 @@ Invoke-RestMethod `
 
 function Get-Command {
     try {
-        (Invoke-RestMethod "$SERVER/api/command?id=$SYSTEM").command
-         Write-Host $command
+        ( $cmd = Invoke-RestMethod -Uri "$SERVER/api/command?id=$SYSTEM" 
+                  -Method GET              
+                 -ContentType "application/json" 
+          return $cmd.command
     } catch {
-        "stop"
+        "stop errors"
     }
 }
 
