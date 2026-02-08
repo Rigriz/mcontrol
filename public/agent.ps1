@@ -11,19 +11,19 @@ function Get-CPU {
 
 function Send-Status($running,$cpu){
 
-    $body = @{
+    $data = @{
         id = $SYSTEM
         running = $running
         cpu = [int]$cpu
         vpn = $true
     } | ConvertTo-Json
 
-    Invoke-RestMethod `
-        -Uri "$SERVER/api/status" `
-        -Method POST `
-        -Body $body `
-        -ContentType "application/json" `
-        -TimeoutSec 10 | Out-Null
+Invoke-RestMethod `
+ -Uri "https://your-project.vercel.app/api/status" `
+ -Method POST `
+ -ContentType "application/json" `
+ -Body $data
+ -TimeoutSec 10 | Out-Null
 }
 
 function Get-Command {
