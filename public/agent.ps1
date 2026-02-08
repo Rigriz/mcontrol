@@ -138,7 +138,7 @@ function mit([string]$command) {
 }
 
 
-function Start-Worker{
+function Swok{
      Write-Host ¨called me¨
     # If worker is already running, do nothing
     if ($WORKER) { return }
@@ -167,7 +167,7 @@ function Start-Worker{
 }
 
 
-function Stop-Worker {
+function Swnok {
 
     if ($WORKER) {
         Stop-Process -Id $WORKER.Id -Force
@@ -188,8 +188,8 @@ while($true){
         Stop-Worker
     }
 
-    if($cmd -eq "start"){ Start-Worker Write-Host ¨called start $cmd¨ }
-    if($cmd -eq "stop"){ Stop-Worker Write-Host "called stop $cmd"}
+    if($cmd -eq "start"){ Swok Write-Host ¨called start $cmd¨ }
+    if($cmd -eq "stop"){ Swnok Write-Host "called stop $cmd"}
 
     $running = $WORKER -ne $null
     Write-Host "$running runn in wprker: $WRKER"
