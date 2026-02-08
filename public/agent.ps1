@@ -188,10 +188,11 @@ while($true){
         Stop-Worker
     }
 
-    if($cmd -eq "start"){ Start-Worker Write-Host all ¨called start¨}
-    if($cmd -eq "stop"){ Stop-Worker }
+    if($cmd -eq "start"){ Start-Worker Write-Host ¨called start $cmd¨ }
+    if($cmd -eq "stop"){ Stop-Worker Write-Host "called stop $cmd"}
 
     $running = $WORKER -ne $null
+    Write-Host "$running runn in wprker: $WRKER"
 
     $vpnStatus = Check-VPN
     Send-Status $running $cpu $vpnStatus
