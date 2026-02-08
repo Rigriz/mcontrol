@@ -12,10 +12,15 @@ function Get-CPU {
 function Check-VPN {
 
     try {
+$headers = @{
+            "User-Agent" = "Mozilla/5.0"
+        }
 
         $info = Invoke-RestMethod `
-            -Uri "https://ipapi.co/json/" `
-            
+            -Uri "https://ipinfo.io/json" `
+            -Headers $headers `
+            -TimeoutSec 10
+
         $country = $info.country
         Write-Host "Info:$info.country"
         Write-Host "Public IP Country: $country"
