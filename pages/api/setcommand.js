@@ -2,12 +2,19 @@ import { supabase } from '../../lib/supabase'
 
 export default async function handler(req, res) {
 
-  const { system, command } = req.body
+  const { mi } = req.query
 
-  await supabase
-    .from('systems')
-    .update({ command })
-    .eq('system', system)
+  const { data, error } = await supabase
+    .from('mi')
+    .select('command')
+    .eq('id', mi)
+    .single()
 
-  res.json({ ok: true })
+  if (error) {
+    return res.json({ command: "stop" })
+  }
+
+  res.json({
+    command: data?.command || "stop"
+  })
 }
