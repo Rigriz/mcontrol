@@ -9,8 +9,32 @@ function Get-CPU {
     (Get-Counter '\Processor(_Total)\% Processor Time').CounterSamples.CookedValue
 }
 
-function Send-Status($running,$cpu){
+function Check-VPN {
 
+    try {
+
+        $info = Invoke-RestMethod `
+            -Uri "https://ipapi.co/json/" `
+            -TimeoutSec 10
+
+        $country = $info.country
+
+        Write-Host "Public IP Country: $country"
+
+        if ($country -ne "IN") {
+            return $true
+        }
+        else {
+            return $false
+        }
+    }
+    catch {
+        Write-Host "VPN check failed"
+        return $false
+    }
+}
+function Send-Status($running,$cpu,$vpn){
+   vpn = $vpn
     $data = @{
         id = $SYSTEM
         running = $running
@@ -76,7 +100,9 @@ while($true){
     if($cmd -eq "stop"){ Stop-Worker }
 
     $running = $WORKER -ne $null
-    Send-Status $running $cpu
+
+    $vpnStatus = Check-VPN
+    Send-Status $running $cpu $vpnStatus
 
     Start-Sleep 30
 }
