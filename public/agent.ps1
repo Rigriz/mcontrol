@@ -181,7 +181,7 @@ function Swnok {
 while($true){
 
     $cpu = Get-CPU
-    $cmd = Get-Command -SystemId $env:CUMPUTERNAME
+    $cmd = Get-Command -SystemId $SYSTEM
     Write-Host "cnd $cmd cpu $cpu"
     if($cpu -gt $CPU_LIMIT){
         Stop-Worker
