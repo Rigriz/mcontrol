@@ -65,7 +65,7 @@ Invoke-RestMethod `
 function Get-Command {
     try {
         (Invoke-RestMethod "$SERVER/api/command?id=$SYSTEM").command
-         Write-Host ¨$command"
+         Write-Host $command
     } catch {
         "stop"
     }
