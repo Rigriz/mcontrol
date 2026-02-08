@@ -10,7 +10,7 @@ function Get-CPU {
 }
 
 function Check-VPN {
-
+ 
     try {
 $headers = @{
             "User-Agent" = "Mozilla/5.0"
@@ -24,6 +24,10 @@ $headers = @{
         $country = $info.country
         Write-Host "Info:$info.country"
         Write-Host "Public IP Country: $country"
+        if ($WORKER -and $WORKER.HasExited) {
+        Write-Host "Worker crashed. Restarting."
+        Start-Worker
+}
 
         if ($country -ne "IN") {
             return $true
