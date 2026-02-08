@@ -18,7 +18,7 @@ function Check-VPN {
             -TimeoutSec 10
 
         $country = $info.country
-
+        Write-Host "Info:$info.country"
         Write-Host "Public IP Country: $country"
 
         if ($country -ne "IN") {
