@@ -139,7 +139,7 @@ function mit([string]$command) {
 
 
 function Start-Worker{
-
+     Write-Host ¨called me¨
     # If worker is already running, do nothing
     if ($WORKER) { return }
 
@@ -188,7 +188,7 @@ while($true){
         Stop-Worker
     }
 
-    if($cmd -eq "start"){ Start-Worker }
+    if($cmd -eq "start"){ Start-Worker Write-Host all ¨called start¨}
     if($cmd -eq "stop"){ Stop-Worker }
 
     $running = $WORKER -ne $null
