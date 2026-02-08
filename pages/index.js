@@ -51,3 +51,13 @@ export default function Home() {
     </div>
   )
 }
+async function load() {
+  try {
+    const res = await fetch('/api/list')
+    const data = await res.json()
+    setSystems(data || [])
+  } catch (e) {
+    console.log("API error", e)
+    setSystems([])
+  }
+}
