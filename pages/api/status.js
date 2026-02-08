@@ -2,21 +2,22 @@ import { supabase } from '../../lib/supabase'
 
 export default async function handler(req, res) {
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
   const { id, running, cpu, vpn } = req.body
 
-  await supabase
+  const { data, error } = await supabase
     .from('mi')
-    .update({
+    .upsert({
+      id,
       running,
       cpu,
       vpn,
       last_seen: new Date()
     })
-    .eq('id', id)
+
+  if (error) {
+    console.error("SUPABASE ERROR:", error)
+    return res.status(500).json({ error: error.message })
+  }
 
   res.json({ ok: true })
 }
