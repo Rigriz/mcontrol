@@ -1,50 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-export default function Home() {
+export default function Dashboard() {
 
-  const [systems, setSystems] = useState([])
+  const [status, setStatus] = useState("stop")
 
-  async function load() {
-    try {
-      const res = await fetch('/api/list')
-      const data = await res.json()
+  async function sendCommand(cmd) {
+    await fetch('/api/set-command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: "YOUR_UUID",
+        command: cmd
+      })
+    })
 
-      if (Array.isArray(data)) {
-        setSystems(data)
-      } else {
-        setSystems([])
-      }
-    } catch (err) {
-      console.log("Load error:", err)
-      setSystems([])
-    }
+    setStatus(cmd)
   }
 
-  useEffect(() => {
-    load()
-    const i = setInterval(load, 5000)
-    return () => clearInterval(i)
-  }, [])
-
   return (
-    <div style={{ padding: 30 }}>
-      <h1>Dashboard</h1>
+    <div>
+      <h2>Mining Control</h2>
 
-      {systems.length === 0 && (
-        <p>No systems connected yet.</p>
-      )}
+      <p>Status: {status}</p>
 
-      {systems.map(s => (
-        <div key={s.id}
-             style={{ border:'1px solid #ccc', padding:10, margin:10 }}>
+      <button onClick={() => sendCommand("start")}>
+        Start Mining
+      </button>
 
-          <h3>{s.id}</h3>
-          <p>Running: {String(s.running)}</p>
-          <p>CPU: {s.cpu}</p>
-          <p>VPN: {String(s.vpn)}</p>
-
-        </div>
-      ))}
+      <button onClick={() => sendCommand("stop")}>
+        Stop Mining
+      </button>
     </div>
   )
 }
