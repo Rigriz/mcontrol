@@ -1,25 +1,20 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-)
+import { supabase } from '../../lib/supabase'
 
 export default async function handler(req, res) {
 
-  if (req.method !== "POST") {
+  if (req.method !== 'POST')
     return res.status(405).end()
-  }
 
-  const { system, vpn, mining } = req.body
+  const { system, running, cpu, vpn } = req.body
 
   await supabase
     .from('systems')
     .upsert({
-      id: system,
-      vpn: vpn,
-      mining: mining,
-      last_seen: new Date()
+      system,
+      running,
+      cpu,
+      vpn,
+      updated_at: new Date()
     })
 
   res.json({ ok: true })

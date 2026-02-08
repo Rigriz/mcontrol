@@ -1,19 +1,16 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-)
+import { supabase } from '../../lib/supabase'
 
 export default async function handler(req, res) {
 
-  const system = req.query.system
+  const { system } = req.query
 
   const { data } = await supabase
     .from('systems')
     .select('command')
-    .eq('id', system)
+    .eq('system', system)
     .single()
 
-  res.json(data)
+  res.json({
+    command: data?.command || "stop"
+  })
 }
