@@ -68,7 +68,8 @@ function Get-Command {
                     -Uri "$SERVER/api/command?id=$SYSTEM" `
                    -Method GET `
                     -ContentType "application/json"  `
-         return $cmd.command
+          Write-Host "getcmd: $cmd"          
+           return $cmd.command
 
     } catch {
         "stop errors"
