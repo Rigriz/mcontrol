@@ -28,8 +28,8 @@ function Check-VPN {
             return $false
         }
     }
-    catch {
-        Write-Host "VPN check failed"
+     catch {
+        Write-Host "VPN check failed: $($_.Exception.Message)"
         return $false
     }
 }
