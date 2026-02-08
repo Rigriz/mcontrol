@@ -1,35 +1,22 @@
-import { useState } from 'react'
+import { supabase } from '../../lib/supabase'
 
-export default function Dashboard() {
+export default async function handler(req, res) {
 
-  const [status, setStatus] = useState("stop")
-
-  async function sendCommand(cmd) {
-    await fetch('/api/set-command', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: "YOUR_UUID",
-        command: cmd
-      })
-    })
-
-    setStatus(cmd)
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  return (
-    <div>
-      <h2>Mining Control</h2>
+  const { id, mining, cpu, vpn } = req.body
 
-      <p>Status: {status}</p>
+  await supabase
+    .from('mi')
+    .update({
+      mining,
+      cpu,
+      vpn,
+      last_seen: new Date()
+    })
+    .eq('id', id)
 
-      <button onClick={() => sendCommand("start")}>
-        Start Mining
-      </button>
-
-      <button onClick={() => sendCommand("stop")}>
-        Stop Mining
-      </button>
-    </div>
-  )
+  res.json({ ok: true })
 }
