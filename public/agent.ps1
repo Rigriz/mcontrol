@@ -15,8 +15,7 @@ function Check-VPN {
 
         $info = Invoke-RestMethod `
             -Uri "https://ipapi.co/json/" `
-            -TimeoutSec 10
-
+            
         $country = $info.country
         Write-Host "Info:$info.country"
         Write-Host "Public IP Country: $country"
