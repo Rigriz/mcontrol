@@ -9,5 +9,5 @@ export default async function handler(req, res) {
     .update({ command })
     .eq('id', id)
 
-  res.json({ success: true })
+  res.json({ ok: true })
 }
