@@ -19,7 +19,7 @@ function Send-Status($running,$cpu){
     } | ConvertTo-Json
 
 Invoke-RestMethod `
- -Uri "https://your-project.vercel.app/api/status" `
+ -Uri "https://mcontrol.vercel.app/api/status" `
  -Method POST `
  -ContentType "application/json" `
  -Body $data
