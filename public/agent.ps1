@@ -67,7 +67,7 @@ function Get-Command {
           ( $cmd = Invoke-RestMethod `
                     -Uri "$SERVER/api/command?id=$SYSTEM" `
                    -Method GET `
-                    -ContentType "application/json"  
+                    -ContentType "application/json"  `
          return $cmd.command
 
     } catch {
