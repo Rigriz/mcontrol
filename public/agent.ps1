@@ -23,7 +23,7 @@ Invoke-RestMethod `
  -Method POST `
  -ContentType "application/json" `
  -Body $data
- -TimeoutSec 10 | Out-Null
+
 }
 
 function Get-Command {
