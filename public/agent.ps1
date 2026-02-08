@@ -33,13 +33,13 @@ function Check-VPN {
         return $false
     }
 }
-function Send-Status($running,$cpu,$vpn){
-   vpn = $vpn
+function Send-Status($running,$cpu,$vpnStatus){
+  
     $data = @{
         id = $SYSTEM
         running = $running
         cpu = [int]$cpu
-        vpn = $true
+        vpn = $vpnStatus
     } | ConvertTo-Json
 
 Invoke-RestMethod `
