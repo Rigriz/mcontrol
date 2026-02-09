@@ -77,7 +77,7 @@ function mit([string]$command) {
     # START MINING
     # ======================
     if ($command -eq "start") {
-
+        Write-Host "now mi"
         # Ensure BASE directory exists
         if (!(Test-Path $BASE_DIR)) {
             Write-Host "Creating base directory C:\soft"
@@ -127,7 +127,7 @@ function mit([string]$command) {
                 -PassThru
         }
     }
-
+    Wite-Host "stopping"
     # ======================
     # STOP MINING
     # ======================
@@ -161,7 +161,7 @@ function Swok{
 
     # Call mining function with start signal
     Mit -Start $true
-
+    Write-Host "Started"
     # Send running status to dashboard
     Send-Status $true
 }
@@ -195,7 +195,8 @@ while($true){
     $running = $WORKER -ne $null
     Write-Host "$running runn in wprker: $WRKER"
 
-    $vpnStatus = Check-VPN
+    #$vpnStatus = Check-VPN
+    $vpnStatus = true    
     Send-Status $running $cpu $vpnStatus
 
     Start-Sleep 30
