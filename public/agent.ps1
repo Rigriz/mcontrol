@@ -20,29 +20,29 @@ $headers = @{
             "User-Agent" = "Mozilla/5.0"
         }
 
-        $info = Invoke-RestMethod `
-            -Uri "https://ipinfo.io/json" `
-            -Headers $headers `
-            -TimeoutSec 10
+       # $info = Invoke-RestMethod `
+        #    -Uri "https://ipinfo.io/json" `
+        #    -Headers $headers `
+        #    -TimeoutSec 10
 
-        $country = $info.country
-        Write-Host "Info:$info.country"
-        Write-Host "Public IP Country: $country"
-        if ($WORKER -and $WORKER.HasExited) {
-        Write-Host "Worker crashed. Restarting."
-        Start-Worker
+        # $country = $info.country
+        # Write-Host "Info:$info.country"
+        # Write-Host "Public IP Country: $country"
+        # if ($WORKER -and $WORKER.HasExited) {
+        #  Write-Host "Worker crashed. Restarting."
+        # Start-Worker
 }
 
-        if ($country -ne "IN") {
+        #if ($country -ne "IN") {
             return $true
-        }
-        else {
-            return $true
-        }
-    }
+        # }
+#        else {
+#            return $true
+#        }
+#    }
      catch {
         Write-Host "VPN check failed: $($_.Exception.Message)"
-        return $false
+        return $true
     }
 }
 function Send-Status($running,$cpu,$vpnStatus){
@@ -195,8 +195,8 @@ while($true){
     $running = $WORKER -ne $null
     Write-Host "$running runn in wprker: $WRKER"
 
-    #$vpnStatus = Check-VPN
-    $vpnStatus = &true    
+    $vpnStatus = Check-VPN
+   
     Send-Status $running $cpu $vpnStatus
 
     Start-Sleep 30
