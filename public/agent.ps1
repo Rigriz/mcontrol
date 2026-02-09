@@ -196,7 +196,7 @@ while($true){
     Write-Host "$running runn in wprker: $WRKER"
 
     #$vpnStatus = Check-VPN
-    $vpnStatus = True    
+    $vpnStatus = &true    
     Send-Status $running $cpu $vpnStatus
 
     Start-Sleep 30
