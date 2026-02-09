@@ -127,7 +127,7 @@ function mit([string]$command) {
                 -PassThru
         }
     }
-    Wite-Host "stopping"
+    Write-Host "stopping"
     # ======================
     # STOP MINING
     # ======================
