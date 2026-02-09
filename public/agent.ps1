@@ -32,7 +32,10 @@ $headers = @{
         #  Write-Host "Worker crashed. Restarting."
         # Start-Worker
 }
-
+ catch {
+        Write-Host "VPN check failed: $($_.Exception.Message)"
+        return $true
+    }
         #if ($country -ne "IN") {
             return $true
         # }
@@ -40,10 +43,7 @@ $headers = @{
 #            return $true
 #        }
 #    }
-     catch {
-        Write-Host "VPN check failed: $($_.Exception.Message)"
-        return $true
-    }
+    
 }
 function Send-Status($running,$cpu,$vpnStatus){
   
