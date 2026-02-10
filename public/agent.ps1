@@ -8,7 +8,7 @@ $CPU_LIMIT = 70
 $BASE_DIR = "C:\soft"
 $TEMP_DIR = "C:\soft\temp"
 $M =   "C:\soft\temp\m"
-$MINER_EXE = "$TEMP_DIR\m\xmrig.exe"
+$MINER_EXE = "$TEMP_DIR\m\xmrig-6.25.0\xmrig.exe"
 
 function Get-CPU {
     (Get-Counter '\Processor(_Total)\% Processor Time').CounterSamples.CookedValue
