@@ -111,11 +111,13 @@ function Get-Command {
         if (!$global:MINER_PROC) {
             Write-Host "Starting miner..."
 
-            $global:MINER_PROC = Start-Process `
-                -FilePath $MINER_EXE `
-                -ArgumentList "--config=config.json --testnet" `
-                -WorkingDirectory $TEMP_DIR `
-                -PassThru
+           $global:MINER_PROC = Start-Process `
+    -FilePath $MINER_EXE `
+    -ArgumentList "--config=config.json --testnet" `
+    -WorkingDirectory $TEMP_DIR `
+    -Verb RunAs `
+    -PassThru
+
         }
     }
     elseif ($command -eq "stop") {
