@@ -47,4 +47,5 @@ function Mit([string]$command) {
             return
         } 
 }
+}
 Mit "stop"
