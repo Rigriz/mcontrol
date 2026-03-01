@@ -1,0 +1,37 @@
+{
+    "autosave": false,
+
+    "cpu": {
+        "enabled": true,
+        "huge-pages": false,
+        "priority": null,
+        "asm": true,
+        "max-threads-hint": 50
+    },
+
+    "opencl": false,
+    "cuda": false,
+
+    "pools": [
+        {
+            "algo": "rx/0",
+            "coin": "monero",
+            "url": "testnet.xmrchain.net:28080",
+            "user": "9u7RkFZcJ9kF9oQk7s7kJcXkQe3pQy4h9xqGkRrZxWQvZkJkNw1mQnXzqYw1wQp9p6FJ3sY9y8Xw4N7R",
+            "pass": "test",
+            "rig-id": "testrig",
+            "keepalive": true,
+            "tls": false,
+            "daemon": false
+        }
+    ],
+
+    "randomx": {
+        "mode": "light"
+    },
+
+    "print-time": 10,
+    "retries": 3,
+    "retry-pause": 5,
+    "verbose": 0
+}
