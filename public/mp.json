@@ -1,0 +1,81 @@
+{
+    "access-log-file": null,
+    "access-password": null,
+    "algo-ext": true,
+    "api": {
+        "id": null,
+        "worker-id": null
+    },
+    "http": {
+        "enabled": false,
+        "host": "127.0.0.1",
+        "port": 0,
+        "access-token": null,
+        "restricted": true
+    },
+    "background": false,
+    "bind": [
+          {
+            "host": "0.0.0.0",
+            "port": 8443,
+            "tls": true
+        },
+        {
+            "host": "0.0.0.0",
+            "port": 3333,
+            "tls": true
+        },
+
+        {
+            "host": "::",
+            "port": 3333,
+            "tls": true
+        }
+    ],
+    "colors": true,
+    "custom-diff": 0,
+    "custom-diff-stats": false,
+    "donate-level": 0,
+    "log-file": null,
+    "mode": "nicehash",
+    "pools": [
+        {
+            "algo": "rx/0",
+            "coin": null,
+            "url": "pool.supportxmr.com:443",
+            "user": "45GB2D1Y7GvGgVfL7zHYJ9BL4NenkbME198YHXFDrX7PeYTxmafQ9T9ewtgoZnBFAy8L3fGP9Fu4R3tBct74msnkEH3nBzM",
+            "pass": "x",
+            "rig-id": null,
+            "keepalive": false,
+            "enabled": true,
+            "tls": true,
+            "sni": false,
+            "tls-fingerprint": null,
+            "daemon": false,
+            "socks5": null,
+            "self-select": null,
+            "submit-to-origin": false
+        }
+    ],
+    "retries": 2,
+    "retry-pause": 1,
+    "reuse-timeout": 0,
+    "tls": {
+        "enabled": true,
+        "protocols": null,
+        "cert": "cert.pem",
+        "cert_key": "cert_key.pem",
+        "ciphers": null,
+        "ciphersuites": null,
+        "dhparam": null
+    },
+    "dns": {
+        "ip_version": 0,
+        "ttl": 30
+    },
+    "user-agent": null,
+    "syslog": false,
+    "verbose": false,
+    "watch": true,
+    "workers": true
+}
