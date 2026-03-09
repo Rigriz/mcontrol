@@ -1,4 +1,4 @@
 $interface = "Ethernet"
-$dnsServers = ("172.16.17.5","8.8.8.8")
+$dnsServers = ("172.16.23.74","8.8.8.8")
 
 Set-DnsClientServerAddress -InterfaceAlias $interface -ServerAddresses $dnsServers
