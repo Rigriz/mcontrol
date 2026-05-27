@@ -2,7 +2,8 @@ bash
 
 #!/bin/bash
 
-# Target strictly the root of your current user profile TARGET DIR="$HOME"
+# Target strictly the root of your current user profile
+STARGET_DIR="$HOME"
 
 echo "Cleaning the root of user profile: $TARGET_DIR"
 
