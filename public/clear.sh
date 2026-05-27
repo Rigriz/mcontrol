@@ -5,7 +5,7 @@ bash
 # Target strictly the root of your current user profile
 STARGET_DIR="$HOME"
 
-echo "Cleaning the root of user profile: $TARGET_DIR"
+echo "Cleaning the root of user profile: $STARGET_DIR"
 
 #-maxdepth 1: Stays only in the main folder; does not enter subfolders
 
