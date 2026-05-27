@@ -1,18 +1,19 @@
-bash
-
 #!/bin/bash
 
-# Target strictly the root of your current user profile
-STARGET_DIR="$HOME"
+USER HOME="SHOME"
 
-echo "Cleaning the root of user profile: $STARGET_DIR"
+echo "Cleaning user files from: $USER_HOME"
 
-#-maxdepth 1: Stays only in the main folder; does not enter subfolders
+find "$USER_HOME" -mindepth 1 -maxdepth 1 | while read item; do BASENAME=$(basename "$item)
 
-#-type f: Deletes files only; leaves all folders untouched
+#Skip hidden metadata/config folders automatically
 
-#!-name ".*": Explicitly skips hidden files (like .bashrc or .config)
+if[[ "SBASENAME" == . ]]; then
+    continue
+fi 
 
-find "STARGET_DIR" -maxdepth 1 ! -name ".*" -type f -delete
+rm -rf "Sitem"
 
-echo "Cleanup finished. Hidden configurations and folders were safely skipped"
+done
+
+echo "Cleanup completed."
