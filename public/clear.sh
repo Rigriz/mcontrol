@@ -9,11 +9,11 @@ find "$USER_HOME" -mindepth 1 -maxdepth 1 | while read item; do
 
 #Skip hidden metadata/config folders automatically
 
-if[[ "$BASENAME" == .* ]]; then
-    continue
-fi 
+      if[[ "$BASENAME" == .* ]]; then
+          continue
+      fi 
 
-rm -rf "$item"
+      rm -rf "$item"
 
 done
 
