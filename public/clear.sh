@@ -7,6 +7,8 @@ TARGET_DIRS=(
     "$USER_HOME/Desktop"
     "$USER_HOME/Pictures"
     "$USER_HOME/Documents"
+    "$USER_HOME/Music"
+    "$USER_HOME/Videos"
 )
 
 echo "Starting cleanup in user directories..."
