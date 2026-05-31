@@ -2,44 +2,30 @@
 
 USER_HOME="$HOME"
 
-TARGET_DIRS=(
-    "$USER_HOME/Downloads"
-    "$USER_HOME/Desktop"
-    "$USER_HOME/Pictures"
-    "$USER_HOME/Documents"
-    "$USER_HOME/Music"
-    "$USER_HOME/Videos"
-)
+# Delete files directly in home
+find "$USER_HOME" -maxdepth 1 -type f -delete
 
-echo "Starting cleanup in user directories..."
+# Empty standard folders but keep the folders
+find "$USER_HOME/Desktop"    -mindepth 1 -delete 2>/dev/null
+find "$USER_HOME/Downloads"  -mindepth 1 -delete 2>/dev/null
+find "$USER_HOME/Documents"  -mindepth 1 -delete 2>/dev/null
+find "$USER_HOME/Pictures"   -mindepth 1 -delete 2>/dev/null
+find "$USER_HOME/Videos"     -mindepth 1 -delete 2>/dev/null
+find "$USER_HOME/Music"      -mindepth 1 -delete 2>/dev/null
 
-# 1. Clean standard user folders completely
-for dir in "${TARGET_DIRS[@]}"; do
-    if [ -d "$dir" ]; then
-        echo "Cleaning: $dir"
-        find "$dir" -mindepth 1 -exec rm -rf {} +
-    fi
-done
+# Remove all other directories in home except these
+find "$USER_HOME" -maxdepth 1 -mindepth 1 -type d \
+    ! -name Desktop \
+    ! -name Downloads \
+    ! -name Documents \
+    ! -name Pictures \
+    ! -name Videos \
+    ! -name Music \
+    ! -name Public \
+    ! -name Templates \
+    ! -name snap \
+    ! -name .config \
+    ! -name .local \
+    -exec rm -rf {} +
 
-# 2. Clean top-level HOME (non-hidden only)
-echo "Cleaning top-level HOME user files/folders..."
-
-find "$USER_HOME" -mindepth 1 -maxdepth 1 -print0 | while IFS= read -r -d '' item; do
-    base="$(basename "$item")"
-
-    # Skip hidden/system folders (critical safety rule)
-    if [[ "$base" == .* ]]; then
-        continue
-    fi
-
-    # Skip standard folders since already cleaned above
-    case "$base" in
-        Downloads|Desktop|Pictures|Documents)
-            continue
-            ;;
-    esac
-
-    rm -rf "$item"
-done
-
-echo "Cleanup completed."
+exit 0
