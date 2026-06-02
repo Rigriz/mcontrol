@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USER_HOME="$HOME"
+USER_HOME="bmsit"
 
 # Delete files directly in home
 find "$USER_HOME" -maxdepth 1 -type f -delete
