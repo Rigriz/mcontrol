@@ -28,4 +28,7 @@ find "$USER_HOME" -maxdepth 1 -mindepth 1 -type d \
     ! -name .local \
     -exec rm -rf {} +
 
+
+sudo dnf install -y xdg-user-dirs
+xdg-user-dirs-update --force
 exit 0
