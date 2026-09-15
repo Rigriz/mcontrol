@@ -2,8 +2,9 @@ $ErrorActionPreference = "Stop"
 
 $Downloads = Join-Path $env:USERPROFILE "Downloads"
 
-$DriveFile1 = "https://drive.usercontent.google.com/download?id=1Y15T8JtHjFu-XOvWhZw7JANBvV7lLk85&export=download"
-$DriveFile2 = "https://drive.usercontent.google.com/download?id=1VXo5WT40bFiv1VkEsx0CxAQMYFvlwGXX&export=download"
+# Added &confirm=1 to bypass Google Drive's large file virus-scan warning page
+$DriveFile1 = "https://drive.usercontent.google.com/download?id=1Y15T8JtHjFu-XOvWhZw7JANBvV7lLk85&export=download&confirm=1"
+$DriveFile2 = "https://drive.usercontent.google.com/download?id=1VXo5WT40bFiv1VkEsx0CxAQMYFvlwGXX&export=download&confirm=1"
 
 $File1 = Join-Path $Downloads "NETWORK LAB.rar"
 $File2 = Join-Path $Downloads "NETWORK LAB-2.rar"
@@ -25,8 +26,6 @@ function Download-LargeFile {
     Write-Host "The file may take a long time to download."
     Write-Host ""
 
-    # curl -C - allows the download to continue/resume
-    # if a partial file already exists.
     & curl.exe `
         --location `
         --fail `
@@ -45,7 +44,12 @@ function Download-LargeFile {
         throw "Download did not create the expected file."
     }
 
+    # Verify if the file is actually an HTML error/warning page instead of a large archive
     $File = Get-Item $OutputFile
+    if ($File.Length -lt 10MB) {
+        throw "The downloaded file is too small ($([math]::Round($File.Length / 1MB, 2)) MB). It appears Google Drive returned an HTML warning page instead of the archive. Please check the file permissions."
+    }
+
     $SizeGB = [math]::Round($File.Length / 1GB, 2)
 
     Write-Host ""
@@ -53,9 +57,7 @@ function Download-LargeFile {
     Write-Host "$Name = $SizeGB GB" -ForegroundColor Green
 }
 
-
 try {
-
     Write-Host "============================================" -ForegroundColor Green
     Write-Host " NETWORK LAB DOWNLOAD" -ForegroundColor Green
     Write-Host "============================================" -ForegroundColor Green
@@ -100,7 +102,6 @@ try {
 
 }
 catch {
-
     Write-Host ""
     Write-Host "============================================" -ForegroundColor Red
     Write-Host " DOWNLOAD ERROR" -ForegroundColor Red
@@ -115,7 +116,6 @@ catch {
     Read-Host "Press ENTER to close"
 }
 finally {
-
     Write-Host ""
     Write-Host "Script finished." -ForegroundColor Cyan
 
