@@ -1,13 +1,12 @@
 $ErrorActionPreference = "Stop"
 
 $Downloads = Join-Path $env:USERPROFILE "Downloads"
+$DestinationFolder = "C:\NETWORKLAB"
 
 $DriveFile1 = "https://drive.usercontent.google.com/download?id=1Y15T8JtHjFu-XOvWhZw7JANBvV7lLk85&export=download&confirm=1"
-# Updated URL with confirm=1 to bypass the virus scan page for the large file
 $DriveFile2 = "https://drive.usercontent.google.com/download?id=1VXo5WT40bFiv1VkEsx0CxAQMYFvlwGXX&export=download&confirm=1"
 
 $File1 = Join-Path $Downloads "NETWORK LAB.rar"
-# Changed extension from .rar to .exe for the second file
 $File2 = Join-Path $Downloads "NETWORK LAB-2.exe"
 
 function Download-LargeFile {
@@ -67,7 +66,7 @@ try {
     }
 
     # --------------------------------------------------------
-    # DOWNLOAD FILE 1
+    # DOWNLOAD FILE 1 (.rar)
     # --------------------------------------------------------
 
     Download-LargeFile `
@@ -76,7 +75,7 @@ try {
         -Name "NETWORK LAB.rar"
 
     # --------------------------------------------------------
-    # DOWNLOAD FILE 2 (.EXE)
+    # DOWNLOAD FILE 2 (.exe)
     # --------------------------------------------------------
 
     Download-LargeFile `
@@ -85,23 +84,28 @@ try {
         -Name "NETWORK LAB-2.exe"
 
     # --------------------------------------------------------
-    # VERIFY
+    # CREATE FOLDER AND MOVE FILE 1
     # --------------------------------------------------------
 
     Write-Host ""
     Write-Host "============================================" -ForegroundColor Green
-    Write-Host " BOTH DOWNLOADS COMPLETED" -ForegroundColor Green
+    Write-Host " ORGANIZING FILES" -ForegroundColor Green
     Write-Host "============================================" -ForegroundColor Green
 
-    Write-Host ""
-    Write-Host "Downloaded files:" -ForegroundColor Cyan
+    if (-not (Test-Path $DestinationFolder)) {
+        New-Item -ItemType Directory -Path $DestinationFolder -Force | Out-Null
+        Write-Host "Created folder: $DestinationFolder" -ForegroundColor Cyan
+    }
 
-    Get-Item $File1, $File2 |
-        Select-Object Name,
-        @{Name="Size";Expression={
-            if ($_.Length -gt 1GB) { "$([math]::Round($_.Length / 1GB, 2)) GB" } 
-            else { "$([math]::Round($_.Length / 1MB, 2)) MB" }
-        }}
+    $DestinationFile1 = Join-Path $DestinationFolder "NETWORK LAB.rar"
+    Move-Item -Path $File1 -Destination $DestinationFile1 -Force
+    
+    # Verification: Check if file was moved successfully
+    if (Test-Path $DestinationFile1) {
+        Write-Host "Successfully moved NETWORK LAB.rar to $DestinationFolder" -ForegroundColor Green
+    } else {
+        throw "Failed to move NETWORK LAB.rar to the destination folder."
+    }
 
     # --------------------------------------------------------
     # RUN .EXE AS ADMINISTRATOR
@@ -110,14 +114,14 @@ try {
     Write-Host ""
     Write-Host "Launching NETWORK LAB-2.exe as Administrator..." -ForegroundColor Yellow
     
-    # This triggers the UAC prompt to run the file with elevated admin rights
+    # Verification: Launch executable with elevated permissions
     Start-Process -FilePath $File2 -Verb RunAs
 
 }
 catch {
     Write-Host ""
     Write-Host "============================================" -ForegroundColor Red
-    Write-Host " DOWNLOAD ERROR" -ForegroundColor Red
+    Write-Host " DOWNLOAD OR SETUP ERROR" -ForegroundColor Red
     Write-Host "============================================" -ForegroundColor Red
 
     Write-Host ""
