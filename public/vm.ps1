@@ -2,12 +2,13 @@ $ErrorActionPreference = "Stop"
 
 $Downloads = Join-Path $env:USERPROFILE "Downloads"
 
-# Added &confirm=1 to bypass Google Drive's large file virus-scan warning page
 $DriveFile1 = "https://drive.usercontent.google.com/download?id=1Y15T8JtHjFu-XOvWhZw7JANBvV7lLk85&export=download&confirm=1"
+# Updated URL with confirm=1 to bypass the virus scan page for the large file
 $DriveFile2 = "https://drive.usercontent.google.com/download?id=1VXo5WT40bFiv1VkEsx0CxAQMYFvlwGXX&export=download&confirm=1"
 
 $File1 = Join-Path $Downloads "NETWORK LAB.rar"
-$File2 = Join-Path $Downloads "NETWORK LAB-2.rar"
+# Changed extension from .rar to .exe for the second file
+$File2 = Join-Path $Downloads "NETWORK LAB-2.exe"
 
 function Download-LargeFile {
     param(
@@ -44,10 +45,9 @@ function Download-LargeFile {
         throw "Download did not create the expected file."
     }
 
-    # Verify if the file is actually an HTML error/warning page instead of a large archive
     $File = Get-Item $OutputFile
     if ($File.Length -lt 10MB) {
-        throw "The downloaded file is too small ($([math]::Round($File.Length / 1MB, 2)) MB). It appears Google Drive returned an HTML warning page instead of the archive. Please check the file permissions."
+        throw "The downloaded file is too small ($([math]::Round($File.Length / 1MB, 2)) MB). It appears Google Drive returned an HTML warning page instead of the actual file."
     }
 
     $SizeGB = [math]::Round($File.Length / 1GB, 2)
@@ -76,13 +76,13 @@ try {
         -Name "NETWORK LAB.rar"
 
     # --------------------------------------------------------
-    # DOWNLOAD FILE 2
+    # DOWNLOAD FILE 2 (.EXE)
     # --------------------------------------------------------
 
     Download-LargeFile `
         -Url $DriveFile2 `
         -OutputFile $File2 `
-        -Name "NETWORK LAB-2.rar"
+        -Name "NETWORK LAB-2.exe"
 
     # --------------------------------------------------------
     # VERIFY
@@ -98,7 +98,20 @@ try {
 
     Get-Item $File1, $File2 |
         Select-Object Name,
-        @{Name="SizeGB";Expression={[math]::Round($_.Length / 1GB, 2)}}
+        @{Name="Size";Expression={
+            if ($_.Length -gt 1GB) { "$([math]::Round($_.Length / 1GB, 2)) GB" } 
+            else { "$([math]::Round($_.Length / 1MB, 2)) MB" }
+        }}
+
+    # --------------------------------------------------------
+    # RUN .EXE AS ADMINISTRATOR
+    # --------------------------------------------------------
+
+    Write-Host ""
+    Write-Host "Launching NETWORK LAB-2.exe as Administrator..." -ForegroundColor Yellow
+    
+    # This triggers the UAC prompt to run the file with elevated admin rights
+    Start-Process -FilePath $File2 -Verb RunAs
 
 }
 catch {
@@ -119,6 +132,5 @@ finally {
     Write-Host ""
     Write-Host "Script finished." -ForegroundColor Cyan
 
-    # This prevents the window from disappearing.
     Read-Host "Press ENTER to close PowerShell"
 }
