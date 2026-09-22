@@ -1,26 +1,60 @@
-$ErrorActionPreference = "Stop"
+\$ErrorActionPreference = "Stop"
 
-$Downloads = Join-Path $env:USERPROFILE "Downloads"
+Downloads = Join-Path env:USERPROFILE "Downloads"
 
-$DriveFile1 = "https://drive.usercontent.google.com/download?id=1tC7Enz5xmMk-pc8-mHV6GmbZQ0mEn_fy&export=download&authuser=0"
-$DriveFile2 = "https://drive.usercontent.google.com/download?id=1RusP5GE4M__23dUxY9kgbT4P_SjHMCYg&export=download&authuser=0"
+# New direct URLs targeting your files
+\$DriveFile1 = "https://drive.usercontent.google.com/download?id=1tC7Enz5xmMk-pc8-mHV6GmbZQ0mEn_fy&export=download&authuser=0"
+\$DriveFile2 = "https://drive.usercontent.google.com/download?id=1RusP5GE4M__23dUxY9kgbT4P_SjHMCYg&export=download&authuser=0"
+
+# FIXED: Explicitly defined paths so the downloader knows where to save the files
+File1 = Join-Path Downloads "vcxsrv-64.1.20.14.0.installer.exe"
+File2 = Join-Path Downloads "putty-64bit-0.85-installer.msi"
+
 function Download-LargeFile {
     param(
-        [string]$Url,
-        [string]$OutputFile,
-        [string]$Name
+        [string]\$Url,
+        [string]\$OutputFile,
+        [string]\$Name
     )
 
     Write-Host ""
     Write-Host "============================================" -ForegroundColor Cyan
-    Write-Host " DOWNLOADING $Name" -ForegroundColor Cyan
+    Write-Host " DOWNLOADING \$Name" -ForegroundColor Cyan
     Write-Host "============================================" -ForegroundColor Cyan
-    Write-Host "File: $OutputFile"
+    Write-Host "File: \$OutputFile"
     Write-Host ""
     Write-Host "DO NOT CLOSE THIS WINDOW." -ForegroundColor Yellow
     Write-Host "The file may take a long time to download."
     Write-Host ""
 
+    # FIXED: Bypasses the "Google Drive can't scan this file for viruses" block
+    if (\$Url -match "id=([^&]+)") {
+        FileId = Matches[1]
+        
+        # Step 1: Request the page to generate the confirmation cookie
+        \$CookieFile = New-TemporaryFile
+        & curl.exe --silent --cookie-jar \(CookieFile "https://google.com\)FileId" | Out-Null
+        
+        # Step 2: Extract the custom download warning token out of the cookies file
+        \$ConfirmCode = ""
+        if (Test-Path \$CookieFile) {
+            CookieContent = Get-Content CookieFile | Out-String
+            if (\$CookieContent -match "download_warning_([^`t]+)`t([^`r`n]+)") {
+                ConfirmCode = Matches[2].Trim()
+            }
+            Remove-Item \$CookieFile -Force
+        }
+
+        # Step 3: Rebuild the target URL with the confirmation bypass token attached
+        if (\(ConfirmCode) {\)DownloadUrl = "https://google.com\(ConfirmCode&id=\)FileId"
+        } else {
+            \(DownloadUrl = "https://google.com\)FileId"
+        }
+    } else {
+        DownloadUrl = Url
+    }
+
+    # Step 4: Run the actual file retrieval
     & curl.exe `
         --location `
         --fail `
@@ -29,53 +63,61 @@ function Download-LargeFile {
         --continue-at - `
         --progress-bar `
         --output "$OutputFile" `
-        "$Url"
+        "\$DownloadUrl"
 
-    if ($LASTEXITCODE -ne 0) {
-        throw "Download failed. curl exit code: $LASTEXITCODE"
+    if (\$LASTEXITCODE -ne 0) {
+        throw "Download failed. curl exit code: \$LASTEXITCODE"
     }
 
-    if (-not (Test-Path $OutputFile)) {
+    if (-not (Test-Path \$OutputFile)) {
         throw "Download did not create the expected file."
     }
 
-    $File = Get-Item $OutputFile
-    if ($File.Length -lt 10MB) {
-        throw "The downloaded file is too small ($([math]::Round($File.Length / 1MB, 2)) MB). It appears Google Drive returned an HTML warning page instead of the actual file."
+    File = Get-Item OutputFile
+    
+    # FIXED: Loosened size check threshold since PuTTY is perfectly valid at 3.7MB
+    if (\$File.Length -lt 1MB) {
+        throw "The downloaded file is too small (\(([math]::Round(\)File.Length / 1MB, 2)) MB). It appears Google Drive returned an HTML warning page instead of the actual file."
     }
 
-    $SizeGB = [math]::Round($File.Length / 1GB, 2)
+    \(SizeMB = [math]::Round(\)File.Length / 1MB, 2)
 
     Write-Host ""
     Write-Host "DOWNLOAD FINISHED!" -ForegroundColor Green
-    Write-Host "$Name = $SizeGB GB" -ForegroundColor Green
+    Write-Host "Name = SizeMB MB" -ForegroundColor Green
 }
+
 try {
     Write-Host "============================================" -ForegroundColor Green
-    if (-not (Test-Path $Downloads)) {
-        New-Item -ItemType Directory -Path $Downloads -Force | Out-Null
+    Write-Host " NETWORK CONSOLE TOOLS DOWNLOAD" -ForegroundColor Green
+    Write-Host "============================================" -ForegroundColor Green
+
+    if (-not (Test-Path \$Downloads)) {
+        New-Item -ItemType Directory -Path \$Downloads -Force | Out-Null
     }
     
     # --------------------------------------------------------
-    # DOWNLOAD FILE 1 
+    # DOWNLOAD FILE 1 (VcXsrv Installer)
     # --------------------------------------------------------
-     Download-LargeFile `
+    Download-LargeFile `
         -Url $DriveFile1 `
-        -OutputFile $File1 `
+        -OutputFile \$File1 `
         -Name "vcxsrv-64.1.20.14.0.installer.exe"
+
     # --------------------------------------------------------
-    # DOWNLOAD FILE 2
-    (.exe)
+    # DOWNLOAD FILE 2 (PuTTY Installer)
     # --------------------------------------------------------
-     Download-LargeFile `
-        -Url $DriveFile2 `
+    Download-LargeFile `
+        -Url \$DriveFile2 `
         -OutputFile $File2 `
         -Name "putty-64bit-0.85-installer.msi"
-     Write-Host ""
+
+    Write-Host ""
     Write-Host "============================================" -ForegroundColor Green
     Write-Host " ORGANIZING FILES" -ForegroundColor Green
     Write-Host "============================================" -ForegroundColor Green
-    }
+    Write-Host "All files successfully downloaded to your Downloads folder!" -ForegroundColor Green
+}
 catch {
     Write-Host ""
     Write-Host "============================================" -ForegroundColor Red
@@ -83,7 +125,7 @@ catch {
     Write-Host "============================================" -ForegroundColor Red
 
     Write-Host ""
-    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host \$_.Exception.Message -ForegroundColor Red
 
     Write-Host ""
     Write-Host "The PowerShell window will remain open." -ForegroundColor Yellow
