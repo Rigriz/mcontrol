@@ -2,9 +2,8 @@
 
 Downloads = Join-Path env:USERPROFILE "Downloads"
 
-\$DriveFile1 = "https://google.com"
-\$DriveFile2 = "https://google.com"
-
+\$DriveFile1 = "https://drive.usercontent.google.com/download?id=1tC7Enz5xmMk-pc8-mHV6GmbZQ0mEn_fy&export=download&authuser=0
+\$DriveFile2 = "https://drive.usercontent.google.com/download?id=1RusP5GE4M__23dUxY9kgbT4P_SjHMCYg&export=download&authuser=0"
 File1 = Join-Path Downloads "vcxsrv-64.1.20.14.0.installer.exe"
 File2 = Join-Path Downloads "putty-64bit-0.85-installer.msi"
 
