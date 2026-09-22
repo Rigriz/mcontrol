@@ -2,11 +2,9 @@
 
 Downloads = Join-Path env:USERPROFILE "Downloads"
 
-# New direct URLs targeting your files
-\$DriveFile1 = "https://drive.usercontent.google.com/download?id=1tC7Enz5xmMk-pc8-mHV6GmbZQ0mEn_fy&export=download&authuser=0"
-\$DriveFile2 = "https://drive.usercontent.google.com/download?id=1RusP5GE4M__23dUxY9kgbT4P_SjHMCYg&export=download&authuser=0"
+\$DriveFile1 = "https://google.com"
+\$DriveFile2 = "https://google.com"
 
-# FIXED: Explicitly defined paths so the downloader knows where to save the files
 File1 = Join-Path Downloads "vcxsrv-64.1.20.14.0.installer.exe"
 File2 = Join-Path Downloads "putty-64bit-0.85-installer.msi"
 
@@ -27,15 +25,10 @@ function Download-LargeFile {
     Write-Host "The file may take a long time to download."
     Write-Host ""
 
-    # FIXED: Bypasses the "Google Drive can't scan this file for viruses" block
     if (\$Url -match "id=([^&]+)") {
-        FileId = Matches[1]
-        
-        # Step 1: Request the page to generate the confirmation cookie
-        \$CookieFile = New-TemporaryFile
+        \$FileId = \(Matches[1]\)CookieFile = New-TemporaryFile
         & curl.exe --silent --cookie-jar \(CookieFile "https://google.com\)FileId" | Out-Null
         
-        # Step 2: Extract the custom download warning token out of the cookies file
         \$ConfirmCode = ""
         if (Test-Path \$CookieFile) {
             CookieContent = Get-Content CookieFile | Out-String
@@ -45,7 +38,6 @@ function Download-LargeFile {
             Remove-Item \$CookieFile -Force
         }
 
-        # Step 3: Rebuild the target URL with the confirmation bypass token attached
         if (\(ConfirmCode) {\)DownloadUrl = "https://google.com\(ConfirmCode&id=\)FileId"
         } else {
             \(DownloadUrl = "https://google.com\)FileId"
@@ -54,7 +46,6 @@ function Download-LargeFile {
         DownloadUrl = Url
     }
 
-    # Step 4: Run the actual file retrieval
     & curl.exe `
         --location `
         --fail `
@@ -75,7 +66,6 @@ function Download-LargeFile {
 
     File = Get-Item OutputFile
     
-    # FIXED: Loosened size check threshold since PuTTY is perfectly valid at 3.7MB
     if (\$File.Length -lt 1MB) {
         throw "The downloaded file is too small (\(([math]::Round(\)File.Length / 1MB, 2)) MB). It appears Google Drive returned an HTML warning page instead of the actual file."
     }
@@ -96,17 +86,11 @@ try {
         New-Item -ItemType Directory -Path \$Downloads -Force | Out-Null
     }
     
-    # --------------------------------------------------------
-    # DOWNLOAD FILE 1 (VcXsrv Installer)
-    # --------------------------------------------------------
     Download-LargeFile `
         -Url $DriveFile1 `
         -OutputFile \$File1 `
         -Name "vcxsrv-64.1.20.14.0.installer.exe"
 
-    # --------------------------------------------------------
-    # DOWNLOAD FILE 2 (PuTTY Installer)
-    # --------------------------------------------------------
     Download-LargeFile `
         -Url \$DriveFile2 `
         -OutputFile $File2 `
