@@ -4,6 +4,7 @@ Downloads = Join-Path env:USERPROFILE "Downloads"
 
 \$DriveFile1 = "https://drive.usercontent.google.com/download?id=1tC7Enz5xmMk-pc8-mHV6GmbZQ0mEn_fy&export=download&authuser=0"
 \$DriveFile2 = "https://drive.usercontent.google.com/download?id=1RusP5GE4M__23dUxY9kgbT4P_SjHMCYg&export=download&authuser=0"
+
 File1 = Join-Path Downloads "vcxsrv-64.1.20.14.0.installer.exe"
 File2 = Join-Path Downloads "putty-64bit-0.85-installer.msi"
 
@@ -26,7 +27,8 @@ function Download-LargeFile {
 
     if (\$Url -match "id=([^&]+)") {
         \$FileId = \(Matches[1]\)CookieFile = New-TemporaryFile
-        & curl.exe --silent --cookie-jar \(CookieFile "https://google.com\)FileId" | Out-Null
+        
+        & curl.exe --silent --location --cookie-jar \(CookieFile "https://google.com\)FileId" | Out-Null
         
         \$ConfirmCode = ""
         if (Test-Path \$CookieFile) {
